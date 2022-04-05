@@ -4,7 +4,6 @@ import (
 	"domino-api-gin/tools"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"log"
 )
 
 type RoleAccount struct {
@@ -28,9 +27,9 @@ func (cls *RoleAccountModel) BindAccountsToRole(roleID uint, accountIDs []string
 	roleAccounts := make([]RoleAccount, 0)
 	for _, accountID := range accountIDs {
 		roleAccount := &RoleAccount{RoleID: roleID, AccountID: tools.StringToUint(accountID)}
+		cls.DB.Create(&roleAccount)
 		roleAccounts = append(roleAccounts, *roleAccount)
 	}
-	cls.DB.Create(&roleAccounts)
 
 	return roleAccounts
 }
@@ -40,11 +39,9 @@ func (cls *RoleAccountModel) BindRolesToAccount(accountID uint, roleIDs []string
 	roleAccounts := make([]RoleAccount, 0)
 	for _, roleID := range roleIDs {
 		roleAccount := &RoleAccount{AccountID: accountID, RoleID: tools.StringToUint(roleID)}
+		cls.DB.Create(&roleAccount)
 		roleAccounts = append(roleAccounts, *roleAccount)
 	}
-	cls.DB.Create(&roleAccounts)
-
-	log.Println(roleAccounts)
 
 	return roleAccounts
 }
