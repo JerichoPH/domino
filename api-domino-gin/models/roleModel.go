@@ -12,6 +12,7 @@ type Role struct {
 	gorm.Model
 	Name     string     `gorm:"type:VARCHAR(64);unique;NOT NULL;COMMENT:'角色名称';"`
 	Accounts []*Account `gorm:"many2many:role_accounts;"`
+	Menus    []*Menu    `gorm:"many2many:role_menus;"`
 }
 
 type RoleModel struct {
