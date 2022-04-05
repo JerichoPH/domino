@@ -89,9 +89,3 @@ func (cls *RoleModel) FindManyByQuery() []Role {
 
 	return roles
 }
-
-func (cls *RoleModel) BindAccounts(id int, accountIds []int) {
-	role := cls.FindOneById(id)
-	tools.IsEmpty(role, Role{}, "角色")
-
-}

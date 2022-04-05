@@ -58,7 +58,7 @@ func (cls *RoleController) PostBindAccounts() {
 	if accountIDs, err := cls.CTX.GetQueryArray("account_ids"); !err {
 		panic(errors.ThrowForbidden("获取参数失败"))
 	} else {
-		ret := (&models.RoleAccountModel{CTX: cls.CTX, DB: cls.DB}).StoreBatch(roleID, accountIDs)
+		ret := (&models.RoleAccountModel{CTX: cls.CTX, DB: cls.DB}).BindAccountsToRole(roleID, accountIDs)
 		if len(ret) > 0 {
 			cls.CTX.JSON(tools.CorrectIns().Created("绑定成功", nil))
 		} else {

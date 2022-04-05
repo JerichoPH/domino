@@ -24,5 +24,10 @@ func (cls *AccountRouter) Load() {
 		r.GET("/account/:id", func(ctx *gin.Context) {
 			(&controllers.AccountController{CTX: ctx, DB: cls.DB}).Show()
 		})
+
+		// 绑定角色到用户
+		r.POST("/account/:id/bindRoles", func(ctx *gin.Context) {
+			(&controllers.AccountController{CTX: ctx, DB: cls.DB}).PostBindRoles()
+		})
 	}
 }

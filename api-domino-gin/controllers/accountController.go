@@ -34,3 +34,19 @@ func (cls *AccountController) Show() {
 
 	cls.CTX.JSON(tools.CorrectIns().Ok("", gin.H{"account": account}))
 }
+
+// PostBindRoles 绑定角色到用户
+func (cls *AccountController) PostBindRoles() {
+	accountID := tools.StringToUint(cls.CTX.Param("id"))
+
+	if roleIDs, err := cls.CTX.GetQueryArray("role_ids"); !err {
+		panic(err)
+	} else {
+		ret := (&models.RoleAccountModel{CTX: cls.CTX, DB: cls.DB}).BindRolesToAccount(accountID, roleIDs)
+		if len(ret) > 0 {
+			cls.CTX.JSON(tools.CorrectIns().Created("绑定成功", nil))
+		} else {
+			panic(errors.ThrowForbidden("绑定失败"))
+		}
+	}
+}
