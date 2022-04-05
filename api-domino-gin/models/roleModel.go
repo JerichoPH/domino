@@ -29,23 +29,23 @@ func (cls *RoleModel) Store() Role {
 
 	var repeatRole Role
 	cls.DB.Where(map[string]interface{}{"name": role.Name}).First(&repeatRole)
-	tools.IsRepeat(repeatRole, Role{}, "角色名称")
+	tools.ThrowErrorWhenIsRepeat(repeatRole, Role{}, "角色名称")
 
 	cls.DB.Omit(clause.Associations).Create(&role)
 	return role
 }
 
-// DeleteOneById 根据id删除
-func (cls *RoleModel) DeleteOneById(id int) *RoleModel {
-	role := cls.FindOneById(id)
+// DeleteOneByID 根据id删除
+func (cls *RoleModel) DeleteOneByID(id int) *RoleModel {
+	role := cls.FindOneByID(id)
 	cls.DB.Omit(clause.Associations).Delete(&role)
 
 	return cls
 }
 
-// UpdateOneById 根据id编辑
-func (cls *RoleModel) UpdateOneById(id int) Role {
-	role := cls.FindOneById(id)
+// UpdateOneByID 根据id编辑
+func (cls *RoleModel) UpdateOneByID(id int) Role {
+	role := cls.FindOneByID(id)
 
 	var roleForm Role
 	if err := cls.CTX.ShouldBind(&roleForm); err != nil {
@@ -54,7 +54,7 @@ func (cls *RoleModel) UpdateOneById(id int) Role {
 
 	var repeatRole Role
 	cls.DB.Where(map[string]interface{}{"name": roleForm.Name}).Not(map[string]interface{}{"id": id}).First(&repeatRole)
-	tools.IsRepeat(repeatRole, Role{}, "角色名称")
+	tools.ThrowErrorWhenIsRepeat(repeatRole, Role{}, "角色名称")
 
 	role.Name = roleForm.Name
 	cls.DB.Omit(clause.Associations).Save(&role)
@@ -62,12 +62,12 @@ func (cls *RoleModel) UpdateOneById(id int) Role {
 	return role
 }
 
-// FindOneById 根据编号查询
-func (cls *RoleModel) FindOneById(id int) Role {
+// FindOneByID 根据编号查询
+func (cls *RoleModel) FindOneByID(id int) Role {
 	var role Role
-	cls.DB.Preload("Accounts").Preload("Account.Status").Where(map[string]interface{}{"id": id}).First(&role)
+	cls.DB.Preload("Accounts").Preload("Account.status").Where(map[string]interface{}{"id": id}).First(&role)
 
-	tools.IsEmpty(role, Role{}, "角色")
+	tools.ThrowErrorWhenIsEmpty(role, Role{}, "角色")
 
 	return role
 }
@@ -86,7 +86,7 @@ func (cls *RoleModel) FindManyByQuery() []Role {
 	if name := cls.CTX.Query("name"); name != "" {
 		query.Where("`name` like '%?%'", name)
 	}
-	query.Preload("Accounts").Preload("Accounts.Status").Find(&roles)
+	query.Preload("Accounts").Preload("Accounts.status").Find(&roles)
 
 	return roles
 }

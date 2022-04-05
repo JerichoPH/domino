@@ -19,7 +19,7 @@ type StatusController struct {
 func (cls *StatusController) Index() {
 	statusModel := &models.StatusModel{CTX: cls.CTX, DB: cls.DB}
 	statuses := statusModel.FindManyByQuery()
-	cls.CTX.JSON(tools.CorrectIns().Ok("", gin.H{"statuses": statuses}))
+	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"statuses": statuses}))
 }
 
 // Show 详情
@@ -28,14 +28,14 @@ func (cls *StatusController) Show() {
 
 	id := tools.StringToInt(cls.CTX.Param("id"))
 
-	status := statusModel.FindOneById(id)
-	cls.CTX.JSON(tools.CorrectIns().Ok("", gin.H{"status": status}))
+	status := statusModel.FindOneByID(id)
+	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"status": status}))
 }
 
 // Store 新建
 func (cls *StatusController) Store() {
 	status := (&models.StatusModel{CTX: cls.CTX, DB: cls.DB}).Store()
-	cls.CTX.JSON(tools.CorrectIns().Created("", gin.H{"status": status}))
+	cls.CTX.JSON(tools.CorrectIns("").Created(gin.H{"status": status}))
 }
 
 // Update 更新
@@ -45,7 +45,7 @@ func (cls *StatusController) Update() {
 	id := tools.StringToInt(cls.CTX.Param("id"))
 
 	status := statusModel.UpdateById(id)
-	cls.CTX.JSON(tools.CorrectIns().Updated("", gin.H{"status": status}))
+	cls.CTX.JSON(tools.CorrectIns("").Updated(gin.H{"status": status}))
 }
 
 // Destroy 删除
@@ -57,6 +57,6 @@ func (cls *StatusController) Destroy() {
 		panic(errors.ThrowForbidden("id必须是数字"))
 	}
 
-	statusModel.DeleteById(id)
-	cls.CTX.JSON(tools.CorrectIns().Deleted(""))
+	statusModel.DeleteByID(id)
+	cls.CTX.JSON(tools.CorrectIns("").Deleted())
 }

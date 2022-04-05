@@ -31,22 +31,22 @@ func (cls *StatusModel) Store() Status {
 
 	var repeatStatus Status
 	cls.DB.Where(map[string]interface{}{"name": status.Name}).First(&repeatStatus)
-	tools.IsRepeat(repeatStatus, Status{}, "状态名称")
+	tools.ThrowErrorWhenIsRepeat(repeatStatus, Status{}, "状态名称")
 
 	cls.DB.Omit(clause.Associations).Create(status)
 	return status
 }
 
-// DeleteById 根据id删除
-func (cls *StatusModel) DeleteById(id int) *StatusModel {
+// DeleteByID 根据ID删除
+func (cls *StatusModel) DeleteByID(id int) *StatusModel {
 	cls.DB.Delete(&Status{}, id)
 
 	return cls
 }
 
-// UpdateById 根据id编辑
+// UpdateById 根据ID编辑
 func (cls *StatusModel) UpdateById(id int) Status {
-	status := cls.FindOneById(id)
+	status := cls.FindOneByID(id)
 
 	var statusForm Status
 	if err := cls.CTX.ShouldBind(&statusForm); err != nil {
@@ -65,25 +65,20 @@ func (cls *StatusModel) UpdateById(id int) Status {
 	return status
 }
 
-// FindOneById 根据编号搜索
-func (cls *StatusModel) FindOneById(id int, ) Status {
+// FindOneByID 根据ID读取一条
+func (cls *StatusModel) FindOneByID(id int, ) Status {
 	var status Status
 	cls.DB.Preload("Accounts").Where(map[string]interface{}{"id": id}).First(&status)
 
-	tools.IsEmpty(status, Status{}, "状态")
+	tools.ThrowErrorWhenIsEmpty(status, Status{}, "状态")
 
 	return status
 }
 
-// FindManyByQuery 根据Query读取用户列表
-func (cls *StatusModel) FindManyByQuery() []Status {
-	var statuses []Status
+// FindManyByQuery 根据Query读取多条
+func (cls *StatusModel) FindManyByQuery() (statuses []Status) {
 	w := make(map[string]interface{})
 	n := make(map[string]interface{})
-
-	if name := cls.CTX.Query("name"); name != "" {
-		w["name"] = name
-	}
 
 	query := (&tools.QueryBuilder{CTX: cls.CTX, DB: cls.DB}).Init(w, n)
 	if name := cls.CTX.Query("name"); name != "" {
@@ -91,5 +86,5 @@ func (cls *StatusModel) FindManyByQuery() []Status {
 	}
 	query.Preload("Accounts").Find(&statuses)
 
-	return statuses
+	return
 }

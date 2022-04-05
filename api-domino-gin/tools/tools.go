@@ -24,8 +24,8 @@ func StringToUint(v string) (uintValue uint) {
 	return
 }
 
-// IsEmpty 判断是否为空
-func IsEmpty(ins interface{}, class interface{}, name string) (isEmpty bool) {
+// ThrowErrorWhenIsEmpty 判断是否为空
+func ThrowErrorWhenIsEmpty(ins interface{}, class interface{}, name string) (isEmpty bool) {
 	isEmpty = reflect.DeepEqual(ins, class)
 
 	if name != "" {
@@ -37,8 +37,8 @@ func IsEmpty(ins interface{}, class interface{}, name string) (isEmpty bool) {
 	return isEmpty
 }
 
-// IsRepeat 判断是否重复
-func IsRepeat(ins interface{}, class interface{}, name string) (isRepeat bool) {
+// ThrowErrorWhenIsRepeat 判断是否重复
+func ThrowErrorWhenIsRepeat(ins interface{}, class interface{}, name string) (isRepeat bool) {
 	isRepeat = !reflect.DeepEqual(ins, class)
 
 	if name != "" {

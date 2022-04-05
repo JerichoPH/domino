@@ -76,7 +76,7 @@ func (cls *AuthorizationController) PostRegister() {
 		panic(ret.Error)
 	}
 
-	cls.CTX.JSON(tools.CorrectIns().Ok("注册成功", nil))
+	cls.CTX.JSON(tools.CorrectIns("注册成功").Ok(nil))
 }
 
 // PostLogin 登录
@@ -105,7 +105,7 @@ func (cls *AuthorizationController) PostLogin() {
 		// 生成jwt错误
 		panic(err)
 	}
-	cls.CTX.JSON(tools.CorrectIns().Ok("登陆成功", gin.H{"token": token}))
+	cls.CTX.JSON(tools.CorrectIns("登陆成功").Ok(gin.H{"token": token}))
 }
 
 // GenerateJwt 生成Jwt

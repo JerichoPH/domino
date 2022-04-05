@@ -47,7 +47,7 @@ func (cls *AccountModel) ScopeNotActivated(db *gorm.DB) *gorm.DB {
 // FindOneById 根据id获取用户
 func (cls *AccountModel) FindOneById(id int) Account {
 	var account Account
-	cls.DB.Preload("Status").Preload("Roles").Where(map[string]interface{}{"id": id}).First(&account)
+	cls.DB.Preload("status").Preload("Roles").Where(map[string]interface{}{"id": id}).First(&account)
 	return account
 }
 
@@ -58,7 +58,7 @@ func (cls *AccountModel) FindOneByUsername(username string) Account {
 	}
 
 	var account Account
-	cls.DB.Scopes(cls.ScopeActivated, cls.ScopeCanLogin).Preload("Status").Preload("Roles").Where(map[string]interface{}{"username": username}).First(&account)
+	cls.DB.Scopes(cls.ScopeActivated, cls.ScopeCanLogin).Preload("status").Preload("Roles").Where(map[string]interface{}{"username": username}).First(&account)
 
 	return account
 }
@@ -89,7 +89,7 @@ func (cls *AccountModel) FindManyByQuery() []Account {
 	if activatedAtBetween := cls.CTX.Query("activated_at_between"); activatedAtBetween != "" {
 		query.Where("activated_at BETWEEN ? AND ?", strings.Split(activatedAtBetween, "~"))
 	}
-	query.Preload("Status").Preload("Roles").Find(&accounts)
+	query.Preload("status").Preload("Roles").Find(&accounts)
 
 	return accounts
 }
