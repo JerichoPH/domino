@@ -1,7 +1,6 @@
 package models
 
 import (
-	"domino-api-gin/errors"
 	"domino-api-gin/tools"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -52,15 +51,9 @@ func (cls *AccountModel) FindOneById(id int) Account {
 }
 
 // FindOneByUsername 根据用户名读取用户
-func (cls *AccountModel) FindOneByUsername(username string) Account {
-	if username == "" {
-		panic(errors.ThrowForbidden("用户名不能为空"))
-	}
-
-	var account Account
+func (cls *AccountModel) FindOneByUsername(username string) (account Account) {
 	cls.DB.Scopes(cls.ScopeActivated, cls.ScopeCanLogin).Preload("status").Preload("Roles").Where(map[string]interface{}{"username": username}).First(&account)
-
-	return account
+	return
 }
 
 // FindManyByQuery 根据Query读取用户列表

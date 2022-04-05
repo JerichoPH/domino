@@ -28,5 +28,10 @@ func (cls *PermissionRouter) Load() {
 		r.POST("/permission",func(ctx *gin.Context){
 			(&controllers.PermissionController{CTX:ctx,DB:cls.DB}).Store()
 		})
+
+		// 编辑
+		r.POST("/permission/:id",func(ctx *gin.Context){
+			(&controllers.PermissionController{CTX:ctx,DB:cls.DB}).Update()
+		})
 	}
 }

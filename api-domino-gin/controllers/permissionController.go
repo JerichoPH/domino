@@ -5,6 +5,7 @@ import (
 	"domino-api-gin/tools"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"log"
 )
 
 type PermissionController struct {
@@ -14,19 +15,41 @@ type PermissionController struct {
 
 // Index 权限列表
 func (cls *PermissionController) Index() {
-	cls.CTX.JSON(tools.CorrectIns().Ok(gin.H{"permissions": (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).FindManyByQuery()}, ""))
+	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"permissions": (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).FindManyByQuery()}))
 }
 
+// Show 详情
 func (cls *PermissionController) Show() {
-	cls.CTX.JSON(tools.CorrectIns().Ok(gin.H{"permission": (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).FindOneByID(tools.StringToUint(cls.CTX.Param("id")))}, ""))
+	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"permission": (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).FindOneByID(tools.StringToUint(cls.CTX.Param("id")))}))
 }
 
+// Store 新建
 func (cls *PermissionController) Store() {
 	var permissionForm models.Permission
-	if err := cls.CTX.ShouldBind(models.Permission{}); err != nil {
+	if err := cls.CTX.ShouldBind(permissionForm); err != nil {
+		panic(err)
+	}
+	log.Println(permissionForm)
+
+	cls.CTX.JSON(tools.CorrectIns("").Created(nil))
+
+	//permission := (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).Store(permissionForm)
+	//cls.CTX.JSON(tools.CorrectIns("").Created(gin.H{"permission": permission}))
+}
+
+// Update 编辑
+func (cls *PermissionController) Update() {
+	var permissionForm models.Permission
+	if err := cls.CTX.ShouldBind(permissionForm); err != nil {
 		panic(err)
 	}
 
-	permission := (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).Store(permissionForm)
-	cls.CTX.JSON(tools.CorrectIns().Created(gin.H{"permission": permission}, ""))
+	permission := (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).UpdateByID(tools.StringToUint(cls.CTX.Param("id")))
+	cls.CTX.JSON(tools.CorrectIns("").Updated(gin.H{"permission": permission}))
+}
+
+// Destroy 删除
+func (cls *PermissionController) Destroy() {
+	(&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).DeleteByID(tools.StringToUint(cls.CTX.Param("id")))
+	cls.CTX.JSON(tools.CorrectIns("").Deleted())
 }

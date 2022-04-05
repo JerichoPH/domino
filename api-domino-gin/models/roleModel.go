@@ -63,18 +63,14 @@ func (cls *RoleModel) UpdateOneByID(id int) Role {
 }
 
 // FindOneByID 根据编号查询
-func (cls *RoleModel) FindOneByID(id int) Role {
-	var role Role
+func (cls *RoleModel) FindOneByID(id int) (role Role) {
 	cls.DB.Preload("Accounts").Preload("Account.status").Where(map[string]interface{}{"id": id}).First(&role)
-
 	tools.ThrowErrorWhenIsEmpty(role, Role{}, "角色")
-
-	return role
+	return
 }
 
 // FindManyByQuery 根据query参数获取列表
-func (cls *RoleModel) FindManyByQuery() []Role {
-	var roles []Role
+func (cls *RoleModel) FindManyByQuery() (roles []Role) {
 	w := make(map[string]interface{})
 	n := make(map[string]interface{})
 
@@ -88,5 +84,5 @@ func (cls *RoleModel) FindManyByQuery() []Role {
 	}
 	query.Preload("Accounts").Preload("Accounts.status").Find(&roles)
 
-	return roles
+	return
 }

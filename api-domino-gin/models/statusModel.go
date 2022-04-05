@@ -66,13 +66,10 @@ func (cls *StatusModel) UpdateById(id int) Status {
 }
 
 // FindOneByID 根据ID读取一条
-func (cls *StatusModel) FindOneByID(id int, ) Status {
-	var status Status
+func (cls *StatusModel) FindOneByID(id int, ) (status Status) {
 	cls.DB.Preload("Accounts").Where(map[string]interface{}{"id": id}).First(&status)
-
 	tools.ThrowErrorWhenIsEmpty(status, Status{}, "状态")
-
-	return status
+	return
 }
 
 // FindManyByQuery 根据Query读取多条

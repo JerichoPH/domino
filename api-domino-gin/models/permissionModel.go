@@ -10,9 +10,9 @@ import (
 
 type Permission struct {
 	gorm.Model
-	Name   string  `form:"name" json:"name" binding:"required" gorm:"type:VARCHAR(64);NOT NULL;UNIQUE;COMMENT:'权限名称';"`
-	Url    url.URL `form:"url" json:"url" binding:"required" gorm:"type:URL;NOT NULL;COMMENT:'路由';"`
-	RoleID uint    `form:"role_id" json:"role_id" gorm:"type:UINT;COMMENT:'所属角色';"`
+	Name   string  `form:"name" binding:"required" gorm:"type:VARCHAR(64);NOT NULL;UNIQUE;COMMENT:'权限名称';"`
+	Url    url.URL `form:"url" binding:"required" gorm:"type:URL;NOT NULL;COMMENT:'路由';"`
+	RoleID uint    `form:"role_id" gorm:"type:UINT;COMMENT:'所属角色';"`
 	Role   Role    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:StatusUniqueCode;references:UniqueCode;"`
 }
 
@@ -58,6 +58,7 @@ func (cls *PermissionModel) UpdateByID(id uint) (permission Permission) {
 // FindOneByID 根据ID读取一条
 func (cls *PermissionModel) FindOneByID(id uint) (permission Permission) {
 	cls.DB.Preload("Role").Where(map[string]interface{}{"id": id}).First(&permission)
+	tools.ThrowErrorWhenIsEmpty(permission, Permission{}, "权限")
 	return
 }
 
@@ -98,7 +99,7 @@ func (cls *PermissionModel) FindManyByQuery() (permissions []Permission) {
 	if name := cls.CTX.Query("name"); name != "" {
 		query.Where("`name` LIKE '%?%'", name)
 	}
-	query.Preload(clause.Associations).Find(&permissions)
+	query.Preload("Role").Find(&permissions)
 
 	return
 }
