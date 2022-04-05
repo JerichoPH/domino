@@ -24,7 +24,7 @@ func (cls *AccountController) Index() {
 
 // Show 详情
 func (cls *AccountController) Show() {
-	id := tools.GetID(cls.CTX.Param("id"))
+	id := tools.StringToInt(cls.CTX.Param("id"))
 
 	accountModel := &models.AccountModel{CTX: cls.CTX, DB: cls.DB}
 	account := accountModel.FindOneById(id)

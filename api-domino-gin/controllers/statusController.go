@@ -26,7 +26,7 @@ func (cls *StatusController) Index() {
 func (cls *StatusController) Show() {
 	statusModel := &models.StatusModel{CTX: cls.CTX, DB: cls.DB}
 
-	id := tools.GetID(cls.CTX.Param("id"))
+	id := tools.StringToInt(cls.CTX.Param("id"))
 
 	status := statusModel.FindOneById(id)
 	cls.CTX.JSON(tools.CorrectIns().Ok("", gin.H{"status": status}))
@@ -42,7 +42,7 @@ func (cls *StatusController) Store() {
 func (cls *StatusController) Update() {
 	statusModel := &models.StatusModel{CTX: cls.CTX, DB: cls.DB}
 
-	id := tools.GetID(cls.CTX.Param("id"))
+	id := tools.StringToInt(cls.CTX.Param("id"))
 
 	status := statusModel.UpdateById(id)
 	cls.CTX.JSON(tools.CorrectIns().Updated("", gin.H{"status": status}))

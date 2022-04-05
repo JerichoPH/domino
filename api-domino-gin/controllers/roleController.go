@@ -6,7 +6,6 @@ import (
 	"domino-api-gin/tools"
 	gin "github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"log"
 )
 
 type RoleController struct {
@@ -23,7 +22,7 @@ func (cls *RoleController) Index() {
 
 // Show 详情
 func (cls *RoleController) Show() {
-	id := tools.GetID(cls.CTX.Param("id"))
+	id := tools.StringToInt(cls.CTX.Param("id"))
 
 	roleModel := models.RoleModel{CTX: cls.CTX, DB: cls.DB}
 	role := roleModel.FindOneById(id)
@@ -39,7 +38,7 @@ func (cls *RoleController) Store() {
 
 // Update 编辑
 func (cls *RoleController) Update() {
-	id := tools.GetID(cls.CTX.Param("id"))
+	id := tools.StringToInt(cls.CTX.Param("id"))
 
 	role := (&models.RoleModel{CTX: cls.CTX, DB: cls.DB}).UpdateOneById(id)
 	cls.CTX.JSON(tools.CorrectIns().Updated("", gin.H{"role": role}))
@@ -47,7 +46,7 @@ func (cls *RoleController) Update() {
 
 // Destroy 删除
 func (cls *RoleController) Destroy() {
-	id := tools.GetID(cls.CTX.Param("id"))
+	id := tools.StringToInt(cls.CTX.Param("id"))
 
 	(&models.RoleModel{CTX: cls.CTX, DB: cls.DB}).DeleteOneById(id)
 	cls.CTX.JSON(tools.CorrectIns().Deleted(""))
@@ -55,11 +54,15 @@ func (cls *RoleController) Destroy() {
 
 // BindAccounts 绑定用户
 func (cls *RoleController) PostBindAccounts() {
-	roleID := cls.CTX.Param("id")
+	roleID := tools.StringToUint(cls.CTX.Param("id"))
 	if accountIDs, err := cls.CTX.GetQueryArray("account_ids"); !err {
 		panic(errors.ThrowForbidden("获取参数失败"))
 	} else {
-		roles := (&models.RoleAccountModel{CTX: cls.CTX, DB: cls.DB}).StoreBatch(roleID, accountIDs)
-		log.Println(roles)
+		ret := (&models.RoleAccountModel{CTX: cls.CTX, DB: cls.DB}).StoreBatch(roleID, accountIDs)
+		if len(ret) > 0 {
+			cls.CTX.JSON(tools.CorrectIns().Created("绑定成功", nil))
+		} else {
+			panic(errors.ThrowForbidden("绑定失败"))
+		}
 	}
 }

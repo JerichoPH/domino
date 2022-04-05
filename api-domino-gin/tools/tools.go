@@ -7,14 +7,21 @@ import (
 	"strconv"
 )
 
-// GetID 获取ID
-func GetID(v string) int {
-	id, err := strconv.Atoi(v)
+// StringToInt 文字转数字
+func StringToInt(v string) (intValue int) {
+	intValue, err := strconv.Atoi(v)
 	if err != nil {
 		panic(errors.ThrowForbidden("id必须是数字"))
 	}
 
-	return id
+	return
+}
+
+// StringToUint 文字转无符号数字
+func StringToUint(v string) (uintValue uint) {
+	intValue := StringToInt(v)
+	uintValue = uint(intValue)
+	return
 }
 
 // IsEmpty 判断是否为空

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"domino-api-gin/tools"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -21,13 +22,13 @@ func (cls *RoleAccountModel) Store(roleID, accountID uint) (roleAccount RoleAcco
 	return
 }
 
-func (cls *RoleAccountModel) StoreBatch(roleID string, accountIDs []string) []RoleAccount {
-	roleAccounts := make([]RoleAccount, 200)
-	return roleAccounts
-	//var roleAccounts []RoleAccount
+func (cls *RoleAccountModel) StoreBatch(roleID uint, accountIDs []string) []RoleAccount {
+	roleAccounts := make([]RoleAccount, 0)
+	for _, accountID := range accountIDs {
+		roleAccount := &RoleAccount{RoleID: roleID, AccountID: tools.StringToUint(accountID)}
+		roleAccounts = append(roleAccounts, *roleAccount)
+	}
+	cls.DB.Create(&roleAccounts)
 
-	//for _, accountID := range accountIDs {
-	//roleAccount := &RoleAccount{RoleID: roleID, AccountID: accountID}
-	//roleAccounts2 := append(roleAccounts, roleAccount)
-	//}
+	return roleAccounts
 }
