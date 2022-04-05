@@ -23,6 +23,7 @@ func initDB() *gorm.DB {
 		&models.Account{},
 		&models.Status{},
 		&models.Menu{},
+		&models.Permission{},
 	)
 	if errAutoMigrate != nil {
 		fmt.Println("自动迁移错误：", errAutoMigrate)

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"domino-api-gin/errors"
 	"domino-api-gin/tools"
 
 	"github.com/gin-gonic/gin"
@@ -10,9 +11,10 @@ import (
 
 type Role struct {
 	gorm.Model
-	Name     string     `gorm:"type:VARCHAR(64);unique;NOT NULL;COMMENT:'角色名称';"`
-	Accounts []*Account `gorm:"many2many:role_accounts;"`
-	Menus    []*Menu    `gorm:"many2many:role_menus;"`
+	Name        string     `gorm:"type:VARCHAR(64);unique;NOT NULL;COMMENT:'角色名称';"`
+	Accounts    []*Account `gorm:"many2many:role_accounts;"`
+	Menus       []*Menu    `gorm:"many2many:role_menus;"`
+	Permissions []Permission
 }
 
 type RoleModel struct {
@@ -21,18 +23,13 @@ type RoleModel struct {
 }
 
 // Store 新建
-func (cls *RoleModel) Store() Role {
-	var role Role
-	if err := cls.CTX.ShouldBind(&role); err != nil {
-		panic(err)
-	}
-
+func (cls *RoleModel) Store(roleForm Role) (role Role) {
 	var repeatRole Role
-	cls.DB.Where(map[string]interface{}{"name": role.Name}).First(&repeatRole)
+	cls.DB.Where(map[string]interface{}{"name": roleForm.Name}).First(&repeatRole)
 	tools.ThrowErrorWhenIsRepeat(repeatRole, Role{}, "角色名称")
 
 	cls.DB.Omit(clause.Associations).Create(&role)
-	return role
+	return
 }
 
 // DeleteOneByID 根据id删除
@@ -82,7 +79,11 @@ func (cls *RoleModel) FindManyByQuery() (roles []Role) {
 	if name := cls.CTX.Query("name"); name != "" {
 		query.Where("`name` like '%?%'", name)
 	}
-	query.Preload("Accounts").Preload("Accounts.status").Find(&roles)
+	query.Preload("Accounts.status").Find(&roles)
+
+	if len(roles) == 0 {
+		panic(errors.ThrowEmpty("角色不存在"))
+	}
 
 	return
 }

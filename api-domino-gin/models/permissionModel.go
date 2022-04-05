@@ -1,19 +1,19 @@
 package models
 
 import (
+	"domino-api-gin/errors"
 	"domino-api-gin/tools"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"net/url"
 )
 
 type Permission struct {
 	gorm.Model
-	Name   string  `form:"name" binding:"required" gorm:"type:VARCHAR(64);NOT NULL;UNIQUE;COMMENT:'权限名称';"`
-	Url    url.URL `form:"url" binding:"required" gorm:"type:URL;NOT NULL;COMMENT:'路由';"`
-	RoleID uint    `form:"role_id" gorm:"type:UINT;COMMENT:'所属角色';"`
-	Role   Role    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:StatusUniqueCode;references:UniqueCode;"`
+	Name   string `form:"name" binding:"required" gorm:"type:VARCHAR(64);NOT NULL;UNIQUE;COMMENT:'权限名称';"`
+	Url    string `form:"url" binding:"required" gorm:"type:TEXT;NOT NULL;COMMENT:'路由';"`
+	RoleID uint   `form:"role_id" gorm:"type:UINT;COMMENT:'所属角色';"`
+	Role   Role   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type PermissionModel struct {
@@ -23,7 +23,15 @@ type PermissionModel struct {
 
 // Store 新建
 func (cls *PermissionModel) Store(permissionForm Permission) (permission Permission) {
-	cls.DB.Omit(clause.Associations).Where(map[string]interface{}{"role_id": permissionForm.RoleID, "name": permissionForm.Name}).FirstOrCreate(&permissionForm)
+	var repeatPermission Permission
+	cls.DB.Omit(clause.Associations).Where(map[string]interface{}{"role_id": permissionForm.RoleID, "name": permissionForm.Name}).First(&repeatPermission)
+	tools.ThrowErrorWhenIsRepeat(repeatPermission, Permission{}, "权限")
+
+	permission.Name = permissionForm.Name
+	permission.Url = permissionForm.Url
+	permission.RoleID = 0
+
+	cls.DB.Omit(clause.Associations).Create(&permission)
 	return
 }
 
@@ -100,6 +108,10 @@ func (cls *PermissionModel) FindManyByQuery() (permissions []Permission) {
 		query.Where("`name` LIKE '%?%'", name)
 	}
 	query.Preload("Role").Find(&permissions)
+
+	if len(permissions) == 0 {
+		panic(errors.ThrowEmpty("权限不存在"))
+	}
 
 	return
 }

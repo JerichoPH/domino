@@ -32,7 +32,12 @@ func (cls *RoleController) Show() {
 
 // Store 新建
 func (cls *RoleController) Store() {
-	role := (&models.RoleModel{CTX: cls.CTX, DB: cls.DB}).Store()
+	var roleForm models.Role
+	if err := cls.CTX.ShouldBind(&roleForm); err != nil {
+		panic(err)
+	}
+
+	role := (&models.RoleModel{CTX: cls.CTX, DB: cls.DB}).Store(roleForm)
 	cls.CTX.JSON(tools.CorrectIns("").Created(gin.H{"role": role}))
 }
 

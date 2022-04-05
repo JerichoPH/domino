@@ -81,7 +81,11 @@ func (cls *StatusModel) FindManyByQuery() (statuses []Status) {
 	if name := cls.CTX.Query("name"); name != "" {
 		query.Where("`name` like '%?%'", name)
 	}
-	query.Preload("Accounts").Find(&statuses)
+	query.Find(&statuses)
+
+	if len(statuses) == 0{
+		panic(errors.ThrowEmpty("状态不存在"))
+	}
 
 	return
 }

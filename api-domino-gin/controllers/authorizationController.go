@@ -30,10 +30,10 @@ type Claims struct {
 
 // RegisterForm 注册表单
 type RegisterForm struct {
-	Username      string `form:"username" binding:"required"`
-	Password      string `form:"password" binding:"required"`
-	PasswordCheck string `form:"password_check" binding:"required"`
-	Nickname      string `form:"nickname" binding:"required"`
+	Username        string `form:"username" json:"username" binding:"required"`
+	Password        string `form:"password" json:"password" binding:"required"`
+	PasswordConfirm string `form:"password_confirm" json:"password_confirm" binding:"required"`
+	Nickname        string `form:"nickname" json:"nickname" binding:"required"`
 }
 
 // LoginForm 登录表单
@@ -49,7 +49,7 @@ func (cls *AuthorizationController) PostRegister() {
 	if err := cls.CTX.ShouldBind(&registerForm); err != nil {
 		panic(err)
 	}
-	if registerForm.Password != registerForm.PasswordCheck {
+	if registerForm.Password != registerForm.PasswordConfirm {
 		panic(errors.ThrowForbidden("两次密码输入不一致"))
 	}
 

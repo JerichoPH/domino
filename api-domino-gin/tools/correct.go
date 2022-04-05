@@ -10,10 +10,10 @@ type correct struct {
 }
 
 var responseIns *correct
-var once sync.Once
+var correctOnce sync.Once
 
 func CorrectIns(msg string) *correct {
-	once.Do(func() { responseIns = &correct{m: msg} })
+	correctOnce.Do(func() { responseIns = &correct{m: msg} })
 	return responseIns
 }
 

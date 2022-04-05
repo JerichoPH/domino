@@ -1,9 +1,11 @@
 package models
 
 import (
+	"domino-api-gin/errors"
 	"domino-api-gin/tools"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"strings"
 	"time"
 )
@@ -27,19 +29,18 @@ type AccountModel struct {
 	Preloads map[string][]string
 }
 
-// ScopeActivated 已经激活的
-func (cls *AccountModel) ScopeActivated(db *gorm.DB) *gorm.DB {
+// ScopeIsActivated 已经激活的
+func (cls *AccountModel) ScopeIsActivated(db *gorm.DB) *gorm.DB {
 	return db.Not(map[string]interface{}{"activated_at": nil})
 }
 
 // ScopeCanLogin 可以登录的
 func (cls *AccountModel) ScopeCanLogin(db *gorm.DB) *gorm.DB {
 	return db.Where(map[string]interface{}{"status_unique_code": "NORMAL"})
-	//return db.Where(map[string]interface{}{"status_id": 1})
 }
 
-// ScopeNotActivated 未激活的
-func (cls *AccountModel) ScopeNotActivated(db *gorm.DB) *gorm.DB {
+// ScopeIsNotActivated 未激活的
+func (cls *AccountModel) ScopeIsNotActivated(db *gorm.DB) *gorm.DB {
 	return db.Where(map[string]interface{}{"activated_at": nil})
 }
 
@@ -52,7 +53,7 @@ func (cls *AccountModel) FindOneById(id int) Account {
 
 // FindOneByUsername 根据用户名读取用户
 func (cls *AccountModel) FindOneByUsername(username string) (account Account) {
-	cls.DB.Scopes(cls.ScopeActivated, cls.ScopeCanLogin).Preload("status").Preload("Roles").Where(map[string]interface{}{"username": username}).First(&account)
+	cls.DB.Scopes(cls.ScopeIsActivated, cls.ScopeCanLogin).Preload(clause.Associations).Where(map[string]interface{}{"username": username}).First(&account)
 	return
 }
 
@@ -82,7 +83,11 @@ func (cls *AccountModel) FindManyByQuery() []Account {
 	if activatedAtBetween := cls.CTX.Query("activated_at_between"); activatedAtBetween != "" {
 		query.Where("activated_at BETWEEN ? AND ?", strings.Split(activatedAtBetween, "~"))
 	}
-	query.Preload("status").Preload("Roles").Find(&accounts)
+	query.Find(&accounts)
+
+	if len(accounts) == 0 {
+		panic(errors.ThrowEmpty("用户不存在"))
+	}
 
 	return accounts
 }

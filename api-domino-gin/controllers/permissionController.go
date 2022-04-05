@@ -5,7 +5,6 @@ import (
 	"domino-api-gin/tools"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"log"
 )
 
 type PermissionController struct {
@@ -26,15 +25,13 @@ func (cls *PermissionController) Show() {
 // Store 新建
 func (cls *PermissionController) Store() {
 	var permissionForm models.Permission
-	if err := cls.CTX.ShouldBind(permissionForm); err != nil {
+	if err := cls.CTX.ShouldBind(&permissionForm); err != nil {
 		panic(err)
 	}
-	log.Println(permissionForm)
 
-	cls.CTX.JSON(tools.CorrectIns("").Created(nil))
+	permission := (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).Store(permissionForm)
 
-	//permission := (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).Store(permissionForm)
-	//cls.CTX.JSON(tools.CorrectIns("").Created(gin.H{"permission": permission}))
+	cls.CTX.JSON(tools.CorrectIns("").Created(gin.H{"permission": permission}))
 }
 
 // Update 编辑
