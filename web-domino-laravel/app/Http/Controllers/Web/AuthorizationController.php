@@ -13,6 +13,7 @@ use Illuminate\View\View;
 use function App\Factions\FailForbidden;
 use function App\Factions\FailValidate;
 use function App\Factions\OkDict;
+use function App\Factions\OkDump;
 
 class AuthorizationController extends Controller
 {
@@ -29,12 +30,12 @@ class AuthorizationController extends Controller
      * 登录页面
      * @return Factory|Application|View
      */
-    public function GetLogin()
+    final public function GetLogin()
     {
         return view("authorization.login");
     }
 
-    public function PostLogin(Request $request)
+    final public function PostLogin(Request $request)
     {
 
     }
@@ -43,7 +44,7 @@ class AuthorizationController extends Controller
      * 注册页面
      * @return Factory|Application|View
      */
-    public function GetRegister()
+    final public function GetRegister()
     {
         return view("authorization.register");
     }
@@ -53,13 +54,16 @@ class AuthorizationController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function PostRegister(Request $request): JsonResponse
+    final public function PostRegister(Request $request): JsonResponse
     {
         $validation = new RegisterValidation($request);
         $v = $validation->check();
         if ($v->fails()) return FailValidate($v->errors()->first());
 
         $validated = $validation->validated();
+        $validated->put("username", $validated->get("email"));
+
+        return OkDump($validated);
 
         $this->curl->post("$this->apiRootUrl/v1/authorization/register", $validated->toArray());
         if ($this->curl->error) return FailForbidden($this->curl->response);

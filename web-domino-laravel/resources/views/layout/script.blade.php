@@ -59,10 +59,4 @@
 {{--<script src="/js/echarts/echarts.min.js"></script>--}}
 <script src="/admin-lte/bower_components/ckeditor/ckeditor.js"></script>
 {{--<script src="/js/tools.js"></script>--}}
-<script type="text/javascript" src="/plugins/layer/layer.js"></script>
-{{--axios--}}
-{{--<script src="/js/axios.js"></script>--}}
-<!-- admin-lte dashboard demo (This is only for demo purposes) -->
-{{--<script src="/admin-lte/dist/js/pages/dashboard.js"></script>--}}
-<!-- admin-lte for demo purposes -->
-{{--<script src="/admin-lte/dist/js/demo.js"></script>--}}
+<script type="text/javascript" src="/layer/layer.js"></script>

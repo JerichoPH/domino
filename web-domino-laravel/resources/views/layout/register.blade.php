@@ -62,7 +62,7 @@
                     {{--</div>--}}
                 </div>
                 <div class="col-xs-4">
-                    <a href="javascript:" class="btn bnt-primary btn-block btn flat" onclick="fnRegister()">Register</a>
+                    <a href="javascript:" class="btn btn-primary btn-block btn flat" onclick="fnRegister()">Register</a>
                     {{--<button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>--}}
                 </div>
             </div>
@@ -86,6 +86,7 @@
 <script src="/admin-lte/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- iCheck -->
 <script src="/admin-lte/plugins/iCheck/icheck.min.js"></script>
+<script type="text/javascript" src="/plugins/layer/layer.js"></script>
 <script>
     let $frmRegister = $("#frmRegister");
 
@@ -105,6 +106,7 @@
 
         let loading = layer.msg('处理中……', {time: 0,});
         $.ajax({
+            headers: {"X-CSRF-TOKEN": $("meta[name='csrf-token']").attr("content"),},
             url: `{{ route("web.authorization:PostRegister") }}`,
             type: "post",
             data: request,
@@ -113,15 +115,11 @@
                 console.log(`{{ route("web.authorization:PostRegister") }} success:`, res);
                 layer.close(loading);
                 layer.msg(res["msg"], {time: 1000,}, function () {
-                    location.href = "{{ route("web.authorization:GetLogin") }}";
+                    {{--location.href = "{{ route("web.authorization:GetLogin") }}";--}}
                 });
             },
             error: err => {
                 console.log(`{{ route("web.authorization:PostRegister") }} fail:`, err);
-                if (err.status === 401)
-                    layer.msg("未登录", {time: 1500,}, () => {
-                        location.href = "{{ route("web.authorization:GetLogin") }}";
-                    });
                 layer.close(loading);
                 layer.msg(err["responseJSON"]["msg"], {time: 2000,});
             },
