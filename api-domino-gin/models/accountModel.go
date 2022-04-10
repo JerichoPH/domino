@@ -16,6 +16,7 @@ type Account struct {
 	Username         string    `form:"username" gorm:"type:VARCHAR(64);UNIQUE;NOT NULL;COMMENT:'用户名';"`
 	Password         string    `form:"password" gorm:"type:VARCHAR(128);NOT NULL;comment:'密码';"`
 	Nickname         string    `form:"nickname" gorm:"type:VARCHAR(64);NOT NULL;DEFAULT '';INDEX:users__nickname__idx;COMMENT:'昵称';"`
+	Email            string    `form:"email" gorm:"type:VARCHAR(64);NOT NULL;UNIQUE;COMMENT:'邮箱';"`
 	ActivatedAt      time.Time `gorm:"type:DATETIME;COMMENT:'激活时间';"`
 	StatusUniqueCode string    `gorm:"type:VARCHAR(64);COMMENT:'状态代码';"`
 	Status           Status    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:StatusUniqueCode;references:UniqueCode;"`
@@ -51,9 +52,15 @@ func (cls *AccountModel) FindOneById(id int) Account {
 	return account
 }
 
-// FindOneByUsername 根据用户名读取用户
+// FindOneByUsername 根据用户名读取一条
 func (cls *AccountModel) FindOneByUsername(username string) (account Account) {
 	cls.DB.Scopes(cls.ScopeIsActivated, cls.ScopeCanLogin).Preload(clause.Associations).Where(map[string]interface{}{"username": username}).First(&account)
+	return
+}
+
+// FindOneByEmail 根据邮箱读取一条
+func (cls *AccountModel) FindOneByEmail(email string) (account Account) {
+	cls.DB.Scopes(cls.ScopeIsActivated, cls.ScopeCanLogin).Preload(clause.Associations).Where(map[string]interface{}{"email": email}).First(&account)
 	return
 }
 
@@ -69,6 +76,9 @@ func (cls *AccountModel) FindManyByQuery() []Account {
 	}
 	if nickname := cls.CTX.Query("nickname"); nickname != "" {
 		w["nickname"] = nickname
+	}
+	if email := cls.CTX.Query("email"); email != "" {
+		w["email"] = email
 	}
 	if activatedAt := cls.CTX.Query("activated_at"); activatedAt != "" {
 		switch activatedAt {

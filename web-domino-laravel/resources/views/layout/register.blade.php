@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 2 | Log in</title>
+    <title>AdminLTE 2 | Registration Page</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -27,46 +27,56 @@
     <!-- Google Font -->
     {{--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">--}}
 </head>
-<body class="hold-transition login-page">
-<div class="login-box">
-    <div class="login-logo">
+<body class="hold-transition register-page">
+<div class="register-box">
+    <div class="register-logo">
         <a href="../../index2.html"><b>Do</b>MINO</a>
     </div>
-    <div class="login-box-body">
-        <p class="login-box-msg">Sign in to start your session</p>
 
-        <form action="../../index2.html" method="post">
+    <div class="register-box-body">
+        <p class="login-box-msg">Register a new membership</p>
+
+        <form id="frmRegister">
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" placeholder="Nickname">
+                <span class="fa fa-user form-control-feedback"></span>
+            </div>
             <div class="form-group has-feedback">
                 <input type="email" class="form-control" placeholder="Email">
                 <span class="fa fa-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="password" class="form-control" placeholder="Password">
-                <span class="fa fas-lock form-control-feedback"></span>
+                <span class="fa fa-lock form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" class="form-control" placeholder="Retype password">
+                <span class="fa fa-lock form-control-feedback"></span>
             </div>
             <div class="row">
                 <div class="col-xs-8">
                     {{--<div class="checkbox icheck">--}}
                     {{--    <label>--}}
-                    {{--        <input type="checkbox"> Remember Me--}}
+                    {{--        <input type="checkbox"> I agree to the <a href="#">terms</a>--}}
                     {{--    </label>--}}
                     {{--</div>--}}
                 </div>
                 <div class="col-xs-4">
-                    <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                    <a href="javascript:" class="btn bnt-primary btn-block btn flat" onclick="fnRegister()">Register</a>
+                    {{--<button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>--}}
                 </div>
             </div>
         </form>
 
         <div class="social-auth-links text-center">
             {{--<p>- OR -</p>--}}
-            {{--<a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign in using--}}
+            {{--<a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign up using--}}
             {{--    Facebook</a>--}}
-            {{--<a href="#" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i> Sign in using--}}
+            {{--<a href="#" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i> Sign up using--}}
             {{--    Google+</a>--}}
         </div>
-        <a href="#">I forgot my password</a><br>
-        <a href="{{ route("web.authorization:GetRegister") }}" class="text-center">Register a new membership</a>
+
+        <a href="{{ route("web.authorization:GetLogin") }}" class="text-center">I already have a membership</a>
     </div>
 </div>
 
@@ -77,6 +87,8 @@
 <!-- iCheck -->
 <script src="/admin-lte/plugins/iCheck/icheck.min.js"></script>
 <script>
+    let $frmRegister = $("#frmRegister");
+
     $(function () {
         $('input').iCheck({
             checkboxClass: 'icheckbox_square-blue',
@@ -84,6 +96,37 @@
             increaseArea: '20%' /* optional */
         });
     });
+
+    /**
+     * 注册
+     */
+    function fnRegister() {
+        let request = $frmRegister.serializeArray();
+
+        let loading = layer.msg('处理中……', {time: 0,});
+        $.ajax({
+            url: `{{ route("web.authorization:PostRegister") }}`,
+            type: "post",
+            data: request,
+            async: true,
+            success: res => {
+                console.log(`{{ route("web.authorization:PostRegister") }} success:`, res);
+                layer.close(loading);
+                layer.msg(res["msg"], {time: 1000,}, function () {
+                    location.href = "{{ route("web.authorization:GetLogin") }}";
+                });
+            },
+            error: err => {
+                console.log(`{{ route("web.authorization:PostRegister") }} fail:`, err);
+                if (err.status === 401)
+                    layer.msg("未登录", {time: 1500,}, () => {
+                        location.href = "{{ route("web.authorization:GetLogin") }}";
+                    });
+                layer.close(loading);
+                layer.msg(err["responseJSON"]["msg"], {time: 2000,});
+            },
+        });
+    }
 </script>
 </body>
 </html>

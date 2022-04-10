@@ -34,6 +34,7 @@ type RegisterForm struct {
 	Password        string `form:"password" json:"password" binding:"required"`
 	PasswordConfirm string `form:"password_confirm" json:"password_confirm" binding:"required"`
 	Nickname        string `form:"nickname" json:"nickname" binding:"required"`
+	Email           string `from:"email" json:"email" binding:"required"`
 }
 
 // LoginForm 登录表单
@@ -55,10 +56,10 @@ func (cls *AuthorizationController) PostRegister() {
 
 	// 检查重复项
 	accountModel := &models.AccountModel{CTX: cls.CTX, DB: cls.DB}
-	repeatAccount := accountModel.FindOneByUsername(registerForm.Username)
-	if !reflect.DeepEqual(repeatAccount, models.Account{}) {
-		panic(errors.ThrowForbidden("用户名被占用"))
-	}
+	repeatAccount := accountModel.FindOneByEmail(registerForm.Email)
+	tools.ThrowErrorWhenIsRepeat(repeatAccount,models.Account{},"邮箱")
+	repeatAccount = accountModel.FindOneByUsername(registerForm.Username)
+	tools.ThrowErrorWhenIsRepeat(repeatAccount,models.Account{},"用户名")
 
 	// 密码加密
 	bytes, _ := bcrypt.GenerateFromPassword([]byte(registerForm.Password), 14)
