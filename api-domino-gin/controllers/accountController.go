@@ -19,7 +19,7 @@ type AccountController struct {
 func (cls *AccountController) Index() {
 	accountModel := &models.AccountModel{CTX: cls.CTX, DB: cls.DB}
 	accounts := accountModel.FindManyByQuery()
-	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"accounts": accounts}))
+	cls.CTX.JSON(tools.CorrectIns("").OK(gin.H{"accounts": accounts}))
 }
 
 // Show 详情
@@ -32,7 +32,7 @@ func (cls *AccountController) Show() {
 		panic(errors.ThrowEmpty("用户不存在"))
 	}
 
-	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"account": account}))
+	cls.CTX.JSON(tools.CorrectIns("").OK(gin.H{"account": account}))
 }
 
 // PostBindRoles 绑定角色到用户

@@ -29,7 +29,7 @@ func initDB() *gorm.DB {
 		fmt.Println("自动迁移错误：", errAutoMigrate)
 		return nil
 	}
-	// Set table options
+	// set table options
 	errSetTable := db.Set("gorm:table_options", "ENGINE=Distributed(cluster, default, hits)").AutoMigrate(&models.Account{})
 	if errSetTable != nil {
 		fmt.Println("增加表错误：", errSetTable)

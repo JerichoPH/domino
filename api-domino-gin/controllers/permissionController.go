@@ -14,12 +14,12 @@ type PermissionController struct {
 
 // Index 权限列表
 func (cls *PermissionController) Index() {
-	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"permissions": (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).FindManyByQuery()}))
+	cls.CTX.JSON(tools.CorrectIns("").OK(gin.H{"permissions": (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).FindManyByQuery()}))
 }
 
 // Show 详情
 func (cls *PermissionController) Show() {
-	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"permission": (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).FindOneByID(tools.StringToUint(cls.CTX.Param("id")))}))
+	cls.CTX.JSON(tools.CorrectIns("").OK(gin.H{"permission": (&models.PermissionModel{CTX: cls.CTX, DB: cls.DB}).FindOneByID(tools.StringToUint(cls.CTX.Param("id")))}))
 }
 
 // Store 新建

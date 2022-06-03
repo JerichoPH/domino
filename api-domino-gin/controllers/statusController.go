@@ -19,7 +19,7 @@ type StatusController struct {
 func (cls *StatusController) Index() {
 	statusModel := &models.StatusModel{CTX: cls.CTX, DB: cls.DB}
 	statuses := statusModel.FindManyByQuery()
-	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"statuses": statuses}))
+	cls.CTX.JSON(tools.CorrectIns("").OK(gin.H{"statuses": statuses}))
 }
 
 // Show 详情
@@ -29,7 +29,7 @@ func (cls *StatusController) Show() {
 	id := tools.StringToInt(cls.CTX.Param("id"))
 
 	status := statusModel.FindOneByID(id)
-	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"status": status}))
+	cls.CTX.JSON(tools.CorrectIns("").OK(gin.H{"status": status}))
 }
 
 // Store 新建

@@ -17,7 +17,7 @@ type RoleController struct {
 func (cls *RoleController) Index() {
 	roleModel := models.RoleModel{CTX: cls.CTX, DB: cls.DB}
 	roles := roleModel.FindManyByQuery()
-	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"roles": roles}))
+	cls.CTX.JSON(tools.CorrectIns("").OK(gin.H{"roles": roles}))
 }
 
 // Show 详情
@@ -27,7 +27,7 @@ func (cls *RoleController) Show() {
 	roleModel := models.RoleModel{CTX: cls.CTX, DB: cls.DB}
 	role := roleModel.FindOneByID(id)
 
-	cls.CTX.JSON(tools.CorrectIns("").Ok(gin.H{"role": role}))
+	cls.CTX.JSON(tools.CorrectIns("").OK(gin.H{"role": role}))
 }
 
 // Store 新建

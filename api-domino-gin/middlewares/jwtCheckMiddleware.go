@@ -48,7 +48,7 @@ func JwtCheck(db *gorm.DB) gin.HandlerFunc {
 			}
 		}
 
-		//ctx.Set("__currentAccount", account)
+		//ctx.set("__currentAccount", account)
 
 		ok = true
 		if !ok {

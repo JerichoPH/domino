@@ -17,7 +17,7 @@ func CorrectIns(msg string) *correct {
 	return responseIns
 }
 
-func (cls *correct) Get() map[string]interface{} {
+func (cls *correct) get() map[string]interface{} {
 	ret := map[string]interface{}{
 		"message":    cls.m,
 		"content":    cls.c,
@@ -27,7 +27,7 @@ func (cls *correct) Get() map[string]interface{} {
 	return ret
 }
 
-func (cls *correct) Set(content interface{}, status uint, errorCode uint) *correct {
+func (cls *correct) set(content interface{}, status uint, errorCode uint) *correct {
 	cls.c = content
 	if status == 0 {
 		cls.s = 200
@@ -38,18 +38,18 @@ func (cls *correct) Set(content interface{}, status uint, errorCode uint) *corre
 	return cls
 }
 
-func (cls *correct) Ok(content interface{}) (int, map[string]interface{}) {
+func (cls *correct) OK(content interface{}) (int, map[string]interface{}) {
 	if cls.m == "" {
 		cls.m = "OK"
 	}
-	return 200, cls.Set(content, 200, 0).Get()
+	return 200, cls.set(content, 200, 0).get()
 }
 
 func (cls *correct) Created(content interface{}) (int, map[string]interface{}) {
 	if cls.m == "" {
 		cls.m = "新建成功"
 	}
-	return 201, cls.Set(content, 201, 0).Get()
+	return 201, cls.set(content, 201, 0).get()
 }
 
 func (cls *correct) Updated(content interface{}) (int, map[string]interface{}) {
@@ -57,12 +57,12 @@ func (cls *correct) Updated(content interface{}) (int, map[string]interface{}) {
 		cls.m = "编辑成功"
 	}
 
-	return 202, cls.Set(content, 202, 0).Get()
+	return 202, cls.set(content, 202, 0).get()
 }
 
 func (cls *correct) Deleted() (int, interface{}) {
 	if cls.m == "" {
 		cls.m = "删除成功"
 	}
-	return 204, cls.Set(nil, 204, 0).Get()
+	return 204, cls.set(nil, 204, 0).get()
 }
